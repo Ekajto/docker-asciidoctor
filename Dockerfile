@@ -18,8 +18,9 @@ ENV ASCIIDOCTOR_VERSION=${asciidoctor_version} \
   ASCIIDOCTOR_MATHEMATICAL_VERSION=${asciidoctor_mathematical_version} \
   ASCIIDOCTOR_REVEALJS_VERSION=${asciidoctor_revealjs_version} \
   KRAMDOWN_ASCIIDOC_VERSION=${kramdown_asciidoc_version} \
-  ASCIIDOCTOR_BIBTEX_VERSION=${asciidoctor_bibtex_version}
-
+  ASCIIDOCTOR_BIBTEX_VERSION=${asciidoctor_bibtex_version} \
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+  PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Haskell build for: erd
@@ -61,6 +62,7 @@ RUN apk add --no-cache \
     bash \
     curl \
     ca-certificates \
+    chromium \
     findutils \
     font-bakoma-ttf \
     git \
@@ -108,6 +110,13 @@ RUN apk add --no-cache --virtual .rubymakedepends \
     text-hyphen \
     "asciidoctor-bibtex:${ASCIIDOCTOR_BIBTEX_VERSION}" \
   && apk del -r --no-cache .rubymakedepends
+
+## Install BPMN-JS-CMD (along with pupeeter and Chromium)
+RUN apk add --no-cache npm \
+  && cd /root \
+  && npm install bpmn-js-cmd
+
+ENV PATH="${PATH}:/root/node_modules/.bin"
 
 # Installing Python dependencies for additional
 # functionnalities as diagrams or syntax highligthing
